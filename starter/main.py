@@ -324,7 +324,19 @@ class AC3:
         partial assignment; the method returns False otherwise. 
         """
         # Implement here the domain-dependent version of AC3.
-        pass
+
+        v_x,v_y=Q.pop()
+
+        result = [f(grid,v_x,v_y) for f in [self.remove_domain_row,self.remove_domain_column,self.remove_domain_unit]]
+
+        result = list(zip(*result))
+
+        if np.any(result[1]):
+            return True
+        else:
+            for va in result[0]:
+                Q+=va
+        return False
 
 class Backtracking:
     """
@@ -439,10 +451,12 @@ for p in problems:
 
     print('Is the current grid a solution? ', g.is_solved())
 
+    import cProfile
     bt=Backtracking()
-    g_bt=bt.search(g, MRV())
+    cProfile.run("g_bt=bt.search(g, FirstAvailable())")
+    cProfile.run("g_bt=bt.search(g, MRV())")
 
-    g_bt.print_domains()
-    print(g_bt.is_solved())
+    # g_bt.print_domains()
+    # print(g_bt.is_solved())
 
 
