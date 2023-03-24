@@ -205,7 +205,11 @@ class FirstAvailable(VarSelector):
     """
     def select_variable(self, grid):
         # Implement here the first available heuristic
-        pass
+        cl=grid.get_cells()
+        for r in range(len(cl)):
+            for c in range(len(cl[r])):
+                if len(cl[r][c])>1:
+                    return r, c
 
 class MRV(VarSelector):
     """
@@ -213,7 +217,9 @@ class MRV(VarSelector):
     """
     def select_variable(self, grid):
         # Implement here the mrv heuristic
-        pass
+        f=np.vectorize(lambda x: len(x) if len(x)>1 else np.inf)
+        idx=np.argmin(f(np.ravel(grid.get_cells())))
+        return idx//grid.get_width(), idx%grid.get_width()
 
 
 class AC3:
@@ -330,7 +336,20 @@ class Backtracking:
         Implements backtracking search with inference. 
         """
         # Implemente here the Backtracking search.
-        pass
+        if grid.is_solved():
+            return grid
+        v_x,v_y=var_selector.select_variable(grid)
+        dom_v=grid.get_cells()[v_x][v_y]
+        for d in dom_v:
+            if grid.is_value_consistent(d,v_x,v_y):
+                grid_c=grid.copy()
+                grid_c.get_cells()[v_x][v_y]=d
+                rb=self.search(grid_c,var_selector)
+                if rb is not None:
+                    return rb
+        return None
+
+
 
 
 file = open('tutorial_problem.txt', 'r')
@@ -419,5 +438,11 @@ for p in problems:
     print()
 
     print('Is the current grid a solution? ', g.is_solved())
+
+    bt=Backtracking()
+    g_bt=bt.search(g, MRV())
+
+    g_bt.print_domains()
+    print(g_bt.is_solved())
 
 
