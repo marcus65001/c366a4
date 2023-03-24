@@ -302,7 +302,11 @@ class AC3:
         already assigned in the initial grid. 
         """
         # Implement here the code for making the CSP arc consistent as a pre-processing step; this method should be called once before search
-        pass
+        f=np.vectorize(len)
+        vx,vy=np.nonzero(f(grid.get_cells())==1)
+        Q_init=list(zip(vx,vy))
+        self.consistency(grid,Q_init)
+
 
     def consistency(self, grid, Q):
         """
