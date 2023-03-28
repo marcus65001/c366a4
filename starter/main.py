@@ -1,3 +1,5 @@
+import time
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -368,8 +370,8 @@ class Backtracking:
 
 
 
-file = open('tutorial_problem.txt', 'r')
-# file = open('top95.txt', 'r')
+# file = open('tutorial_problem.txt', 'r')
+file = open('top95.txt', 'r')
 problems = file.readlines()
 
 for p in problems:
@@ -455,10 +457,16 @@ for p in problems:
 
     print('Is the current grid a solution? ', g.is_solved())
 
-    import cProfile
+
     bt=Backtracking()
-    cProfile.run("g_bt=bt.search(g, FirstAvailable())")
-    cProfile.run("g_bt=bt.search(g, MRV())")
+    t_fa_s=time.perf_counter()
+    g_bt_fa=bt.search(g, FirstAvailable())
+    t_fa = time.perf_counter()-t_fa_s
+    t_mrv_s=time.perf_counter()
+    g_bt_mrv=bt.search(g, MRV())
+    t_mrv=time.perf_counter()-t_mrv_s
+
+    print(t_fa,t_mrv)
 
     # g_bt.print_domains()
     # print(g_bt.is_solved())
