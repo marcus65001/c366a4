@@ -328,18 +328,18 @@ class AC3:
         partial assignment; the method returns False otherwise. 
         """
         # Implement here the domain-dependent version of AC3.
+        while len(Q)>0:
+            v_x,v_y=Q.pop()
 
-        v_x,v_y=Q.pop()
+            result = [f(grid,v_x,v_y) for f in [self.remove_domain_row,self.remove_domain_column,self.remove_domain_unit]]
 
-        result = [f(grid,v_x,v_y) for f in [self.remove_domain_row,self.remove_domain_column,self.remove_domain_unit]]
+            result = list(zip(*result))
 
-        result = list(zip(*result))
-
-        if np.any(result[1]):
-            return True
-        else:
-            for va in result[0]:
-                Q+=va
+            if np.any(result[1]):
+                return True
+            else:
+                for va in result[0]:
+                    Q+=va
         return False
 
 class Backtracking:
