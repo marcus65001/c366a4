@@ -347,6 +347,9 @@ class Backtracking:
     Class that implements backtracking search for solving CSPs. 
     """
 
+    def __init__(self, ac:AC3):
+        self.ac=ac
+
     def search(self, grid, var_selector):
         """
         Implements backtracking search with inference. 
@@ -360,9 +363,11 @@ class Backtracking:
             if grid.is_value_consistent(d,v_x,v_y):
                 grid_c=grid.copy()
                 grid_c.get_cells()[v_x][v_y]=d
-                rb=self.search(grid_c,var_selector)
-                if rb is not None:
-                    return rb
+                ri=self.ac.consistency(grid_c,[(v_x,v_y)])
+                if not ri:
+                    rb=self.search(grid_c,var_selector)
+                    if rb is not None:
+                        return rb
         return None
 
 
@@ -456,9 +461,12 @@ for p in problems:
     print('Is the current grid a solution? ', g.is_solved())
 
     import cProfile
-    bt=Backtracking()
-    cProfile.run("g_bt=bt.search(g, FirstAvailable())")
-    cProfile.run("g_bt=bt.search(g, MRV())")
+    bt=Backtracking(ac3)
+    # g=copy_g.copy()
+    # cProfile.run("g_bt=bt.search(g, FirstAvailable())")
+    # g = copy_g.copy()
+    # cProfile.run("g_bt=bt.search(g, MRV())")
+    g_bt = bt.search(g, MRV())
 
     # g_bt.print_domains()
     # print(g_bt.is_solved())
