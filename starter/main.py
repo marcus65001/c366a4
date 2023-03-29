@@ -1,3 +1,5 @@
+import time
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -205,7 +207,12 @@ class FirstAvailable(VarSelector):
     """
     def select_variable(self, grid):
         # Implement here the first available heuristic
-        pass
+        g=grid.get_cells()
+        w=grid.get_width()
+        for r in range(w):
+            for c in range(w):
+                if len(g[r][c])>1:
+                    return r,c
 
 class MRV(VarSelector):
     """
@@ -213,7 +220,18 @@ class MRV(VarSelector):
     """
     def select_variable(self, grid):
         # Implement here the mrv heuristic
-        pass
+        min_v=11
+        cx,cy=(None,None)
+        g = grid.get_cells()
+        w = grid.get_width()
+        for r in range(w):
+            for c in range(w):
+                if (lg:=len(g[r][c]))==1:
+                    continue
+                if lg < min_v:
+                    min_v=len(g[r][c])
+                    cx,cy=(r,c)
+        return cx,cy
 
 
 class AC3:
@@ -296,7 +314,14 @@ class AC3:
         already assigned in the initial grid. 
         """
         # Implement here the code for making the CSP arc consistent as a pre-processing step; this method should be called once before search
-        pass
+        Q=[]
+        g=grid.get_cells()
+        w=grid.get_width()
+        for r in range(w):
+            for c in range(w):
+                if len(g[r][c])==1:
+                    Q.append((r,c))
+        self.consistency(grid,Q)
 
     def consistency(self, grid, Q):
         """
@@ -318,19 +343,41 @@ class AC3:
         partial assignment; the method returns False otherwise. 
         """
         # Implement here the domain-dependent version of AC3.
-        pass
+        while len(Q)>0:
+            vr,vc=Q.pop()
+            for f in [self.remove_domain_row,self.remove_domain_column,self.remove_domain_unit]:
+                va,flag=f(grid,vr,vc)
+                if flag:
+                    return True
+                Q+=va
+        return False
+
+
 
 class Backtracking:
     """
     Class that implements backtracking search for solving CSPs. 
     """
+    def __init__(self, ac:AC3):
+        self.ac=ac
 
     def search(self, grid, var_selector):
         """
         Implements backtracking search with inference. 
         """
         # Implemente here the Backtracking search.
-        pass
+        if grid.is_solved():
+            return grid
+        vx,vy=var_selector.select_variable(grid)
+        dom=grid.get_cells()[vx][vy]
+        for d in dom:
+            if grid.is_value_consistent(d,vx,vy):
+                grid_copy=grid.copy()
+                grid_copy.get_cells()[vx][vy]=d
+                rb=self.search(grid_copy,var_selector)
+                if rb is not None:
+                    return rb
+        return None
 
 
 file = open('tutorial_problem.txt', 'r')
@@ -420,4 +467,10 @@ for p in problems:
 
     print('Is the current grid a solution? ', g.is_solved())
 
-
+    bt=Backtracking()
+    tfa_s=time.perf_counter()
+    g_bt=bt.search(g,FirstAvailable())
+    print(g_bt.is_solved(),time.perf_counter()-tfa_s)
+    tmrv_s = time.perf_counter()
+    g_bt = bt.search(g, MRV())
+    print(g_bt.is_solved(),time.perf_counter()-tmrv_s)
