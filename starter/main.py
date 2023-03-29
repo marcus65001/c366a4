@@ -230,6 +230,8 @@ class MRV(VarSelector):
                     continue
                 if lg < min_v:
                     min_v=len(g[r][c])
+                    if lg==2:
+                        return r,c
                     cx,cy=(r,c)
         return cx,cy
 
@@ -374,7 +376,7 @@ class Backtracking:
             if grid.is_value_consistent(d,vx,vy):
                 grid_copy=grid.copy()
                 grid_copy.get_cells()[vx][vy]=d
-                ri=ac3.consistency(grid_copy,[(vx,vy)])
+                ri=self.ac.consistency(grid_copy,[(vx,vy)])
                 if not ri:
                     rb=self.search(grid_copy,var_selector)
                     if rb is not None:
@@ -382,22 +384,39 @@ class Backtracking:
         return None
 
 
-# file = open('tutorial_problem.txt', 'r')
-file = open('top95.txt', 'r')
-problems = file.readlines()
-
-for p in problems:
-    # Read problem from string
-    g = Grid()
-    g.read_file(p)
+if __name__ == '__main__':
+    # file = open('tutorial_problem.txt', 'r')
+    file = open('top95.txt', 'r')
+    problems = file.readlines()
 
     # Instance of AC3 Object
     ac3 = AC3()
-
     bt=Backtracking(ac3)
-    tfa_s=time.perf_counter()
-    g_bt=bt.search(g,FirstAvailable())
-    print(g_bt.is_solved(),time.perf_counter()-tfa_s)
-    tmrv_s = time.perf_counter()
-    g_bt = bt.search(g, MRV())
-    print(g_bt.is_solved(),time.perf_counter()-tmrv_s)
+
+    running_time_mrv=[]
+    running_time_first_available=[]
+
+    for p in problems:
+        # Read problem from string
+        g = Grid()
+        g.read_file(p)
+
+        ac3.pre_process_consistency(g)
+
+        tfa_s=time.perf_counter()
+        g_bt=bt.search(g,FirstAvailable())
+        tfa=time.perf_counter()-tfa_s
+        assert g_bt.is_solved()
+
+        tmrv_s = time.perf_counter()
+        g_bt_mrv = bt.search(g, MRV())
+        tmrv = time.perf_counter()-tmrv_s
+        assert g_bt_mrv.is_solved()
+        print(tfa, tmrv)
+        running_time_first_available.append(tfa)
+        running_time_mrv.append(tmrv)
+
+    plotter = PlotResults()
+    plotter.plot_results(running_time_mrv, running_time_first_available,
+    "Running Time Backtracking (MRV)",
+    "Running Time Backtracking (FA)", "running_time")
