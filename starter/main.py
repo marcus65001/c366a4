@@ -392,7 +392,7 @@ for p in problems:
     ac3 = AC3()
     ac3.pre_process_consistency(g)
 
-    bt=Backtracking()
+    bt=Backtracking(ac3)
     t_fa_s=time.perf_counter()
     g_bt_fa=bt.search(g, FirstAvailable())
     t_fa = time.perf_counter()-t_fa_s
