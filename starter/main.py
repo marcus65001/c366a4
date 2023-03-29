@@ -219,7 +219,7 @@ class MRV(VarSelector):
     """
     def select_variable(self, grid):
         # Implement here the mrv heuristic
-        f=np.vectorize(lambda x: len(x) if len(x)>1 else np.inf)
+        f=np.vectorize(lambda x: len(x) if len(x)>1 else 11)
         idx=np.argmin(f(np.ravel(grid.get_cells())))
         return idx//grid.get_width(), idx%grid.get_width()
 
@@ -379,14 +379,17 @@ class Backtracking:
 file = open('top95.txt', 'r')
 problems = file.readlines()
 
+running_time_mrv=[]
+running_time_first_available=[]
+
 for p in problems:
     # Read problem from string
     g = Grid()
     g.read_file(p)
 
     # Print the grid on the screen
-    print('Puzzle')
-    g.print()
+    # print('Puzzle')
+    # g.print()
 
     # Instance of AC3 Object
     ac3 = AC3()
@@ -401,8 +404,14 @@ for p in problems:
     t_mrv=time.perf_counter()-t_mrv_s
 
     print(t_fa,t_mrv)
+    running_time_first_available.append(t_fa)
+    running_time_mrv.append(t_mrv)
 
     # g_bt.print_domains()
     # print(g_bt.is_solved())
 
 
+plotter = PlotResults()
+plotter.plot_results(running_time_mrv, running_time_first_available,
+"Running Time Backtracking (MRV)",
+"Running Time Backtracking (FA)", "running_time")
