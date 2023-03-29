@@ -217,19 +217,9 @@ class MRV(VarSelector):
     """
     def select_variable(self, grid):
         # Implement here the mrv heuristic
-        # f=np.vectorize(lambda x: len(x) if len(x)>1 else np.inf)
-        # idx=np.argmin(f(np.ravel(grid.get_cells())))
-        # return idx//grid.get_width(), idx%grid.get_width()
-        mx=np.inf
-        x,y=None,None
-        cl=grid.get_cells()
-        for r in range(len(cl)):
-            for c in range(len(cl[r])):
-                if len(cl[r][c])>1:
-                    if len(cl[r][c])<mx:
-                        mx=len(cl[r][c])
-                        x,y=r,c
-        return x,y
+        f=np.vectorize(lambda x: len(x) if len(x)>1 else np.inf)
+        idx=np.argmin(f(np.ravel(grid.get_cells())))
+        return idx//grid.get_width(), idx%grid.get_width()
 
 class AC3:
     """
