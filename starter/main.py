@@ -349,6 +349,9 @@ class Backtracking:
     Class that implements backtracking search for solving CSPs. 
     """
 
+    def __init__(self, ac:AC3):
+        self.ac=ac
+
     def search(self, grid, var_selector):
         """
         Implements backtracking search with inference. 
@@ -362,9 +365,11 @@ class Backtracking:
             if grid.is_value_consistent(d,v_x,v_y):
                 grid_c=grid.copy()
                 grid_c.get_cells()[v_x][v_y]=d
-                rb=self.search(grid_c,var_selector)
-                if rb is not None:
-                    return rb
+                ri=self.ac.consistency(grid_c,[(v_x,v_y)])
+                if not ri:
+                    rb=self.search(grid_c,var_selector)
+                    if rb is not None:
+                        return rb
         return None
 
 
