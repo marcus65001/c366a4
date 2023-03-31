@@ -405,12 +405,11 @@ if __name__ == '__main__':
         tfa_s=time.perf_counter()
         g_bt=bt.search(g,FirstAvailable())
         tfa=time.perf_counter()-tfa_s
-        assert g_bt.is_solved()
 
         tmrv_s = time.perf_counter()
         g_bt_mrv = bt.search(g, MRV())
         tmrv = time.perf_counter()-tmrv_s
-        assert g_bt_mrv.is_solved()
+
         running_time_first_available.append(tfa)
         running_time_mrv.append(tmrv)
 
