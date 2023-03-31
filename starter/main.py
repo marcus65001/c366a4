@@ -373,14 +373,13 @@ class Backtracking:
         vx,vy=var_selector.select_variable(grid)
         dom=grid.get_cells()[vx][vy]
         for d in dom:
-            if grid.is_value_consistent(d,vx,vy):
-                grid_copy=grid.copy()
-                grid_copy.get_cells()[vx][vy]=d
-                ri=self.ac.consistency(grid_copy,[(vx,vy)])
-                if not ri:
-                    rb=self.search(grid_copy,var_selector)
-                    if rb is not None:
-                        return rb
+            grid_copy=grid.copy()
+            grid_copy.get_cells()[vx][vy]=d
+            ri=self.ac.consistency(grid_copy,[(vx,vy)])
+            if not ri:
+                rb=self.search(grid_copy,var_selector)
+                if rb is not None:
+                    return rb
         return None
 
 
@@ -412,7 +411,6 @@ if __name__ == '__main__':
         g_bt_mrv = bt.search(g, MRV())
         tmrv = time.perf_counter()-tmrv_s
         assert g_bt_mrv.is_solved()
-        print(tfa, tmrv)
         running_time_first_available.append(tfa)
         running_time_mrv.append(tmrv)
 
